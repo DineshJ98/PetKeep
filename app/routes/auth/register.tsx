@@ -1,4 +1,3 @@
-import { title } from "process";
 import type { Route } from "./+types/register";
 import { authService } from "~/service/auth.service";
 import {
@@ -6,7 +5,6 @@ import {
   Link,
   redirect,
   useActionData,
-  useNavigate,
   useNavigation,
 } from "react-router";
 

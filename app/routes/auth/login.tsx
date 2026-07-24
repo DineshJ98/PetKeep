@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Form, redirect, useActionData, useNavigation } from "react-router";
+import {
+  Form,
+  Link,
+  redirect,
+  useActionData,
+  useNavigation,
+} from "react-router";
 import { authService } from "~/service/auth.service";
 import type { Route } from "./+types/login";
 
@@ -7,7 +13,7 @@ export function meta({}: Route.MetaArgs) {
   return [{ title: "Login" }, { name: "description", content: "Login form" }];
 }
 
-export async function action({ request }: { request: Request }) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const username = formData.get("username")?.toString() || "";
   const password = formData.get("password")?.toString() || "";
@@ -105,6 +111,14 @@ export default function Login() {
             {isSubmitting ? "Decoding Core Signatures..." : "Sign In"}
           </button>
         </Form>
+        <div className="text-center pt-2 border-t border-slate-200 dark:border-slate-800">
+          <Link
+            to="register"
+            className="text-sm font-medium text-teal-500 hover:text-teal-400 transition-colors"
+          >
+            Do not have an account yet? Sign up here
+          </Link>
+        </div>
       </div>
     </div>
   );
