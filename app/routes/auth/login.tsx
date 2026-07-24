@@ -4,10 +4,7 @@ import { authService } from "~/service/auth.service";
 import type { Route } from "./+types/login";
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Login" },
-    { name: "Login page for PetKeep", content: "Login form" },
-  ];
+  return [{ title: "Login" }, { name: "description", content: "Login form" }];
 }
 
 export async function action({ request }: { request: Request }) {
