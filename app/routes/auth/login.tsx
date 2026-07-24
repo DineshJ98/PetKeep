@@ -82,7 +82,7 @@ export default function Login() {
               name="username"
               type="text"
               required
-              placeholder="e.g. Dinesh Jeewantha"
+              placeholder="e.g. PetLover"
               className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-lg p-2.5 text-sm"
             />
           </div>

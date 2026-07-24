@@ -16,7 +16,7 @@ export const authService = {
   async login(
     payload: LoginPayload,
   ): Promise<{ username: string; role: string }> {
-    const response = await fetch("http://localhost:8080/api/auth/login", {
+    const response = await fetch("http://localhost:8080/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -25,10 +25,13 @@ export const authService = {
     });
 
     if (!response.ok) {
-      throw new Error("Invalid username or password!");
+      throw new Error(
+        "Invalid username, password or user level (user or admin manager)!",
+      );
     }
 
     const data: { token: string } = await response.json();
+    console.log(data);
 
     if (!data.token) {
       throw new Error("Authentication token not found in the response!");
