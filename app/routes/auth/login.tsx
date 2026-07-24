@@ -39,7 +39,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 px-4 transition-colors">
       <div className="w-full max-w-md space-y-6 p-8 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl">
         <div className="text-center">
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">
             PetKeep Sign In
           </h1>
           <p className="mt-1 text-sm text-slate-400">
@@ -103,7 +103,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium py-2.5 rounded-lg text-sm shadow transition-all disabled:opacity-50"
+            className="w-full bg-linear-to-r from-teal-500 to-blue-600 text-white font-medium py-2.5 rounded-lg text-sm shadow transition-all disabled:opacity-50"
           >
             {isSubmitting ? "Decoding Core Signatures..." : "Sign In"}
           </button>
