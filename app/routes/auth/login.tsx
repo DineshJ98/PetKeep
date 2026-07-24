@@ -19,7 +19,7 @@ export async function action({ request }: { request: Request }) {
     if (userSession.role === "ADMIN") {
       return redirect("/admin/dashboard");
     } else {
-      return redirect("/petdashboard");
+      return redirect("/playground");
     }
   } catch (error: any) {
     return { error: error.message };
