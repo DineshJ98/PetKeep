@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import { register } from "module";
 
 export interface LoginPayload {
   username: string;
@@ -50,6 +51,23 @@ export const authService = {
       username: decoded.sub,
       role: serverRole,
     };
+  },
+
+  async register(payload: Omit<LoginPayload, "role">): Promise<void> {
+    const response = await fetch("http://localhost:8080/api/v1/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: payload.username,
+        password: payload.password,
+        role: "user",
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Registration failed.");
+    }
   },
 
   getToken(): string | null {
