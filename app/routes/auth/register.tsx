@@ -9,7 +9,7 @@ import {
 } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
-  [
+  return [
     { title: "Register | PetKeep" },
     { name: "description", content: "Create an account to adapt a pet" },
   ];

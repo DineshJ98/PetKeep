@@ -1,5 +1,4 @@
-import { jwtDecode } from "jwt-decode";
-import { register } from "module";
+// app/service/auth.service.ts
 
 export interface LoginPayload {
   username: string;
@@ -7,52 +6,25 @@ export interface LoginPayload {
   role: "user" | "admin";
 }
 
-interface JWTPayload {
-  sub: string;
-  roles: Array<{ authority: string }>;
-  exp: number;
-}
-
 export const authService = {
-  async login(
-    payload: LoginPayload,
-  ): Promise<{ username: string; role: string }> {
-    const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+  /**
+   * Dispatches credentials to your Spring Boot REST API.
+   * Returns the RAW HTTP Response object so the React Router SSR layout
+   * can intercept and parse the "Set-Cookie" security header wrapper.
+   */
+  async loginResponse(payload: LoginPayload): Promise<Response> {
+    return fetch("http://localhost:8080/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-      throw new Error(
-        "Invalid username, password or user level (user or admin manager)!",
-      );
-    }
-
-    const data: { token: string } = await response.json();
-    console.log(data);
-
-    if (!data.token) {
-      throw new Error("Authentication token not found in the response!");
-    }
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem("jwt_token", data.token);
-    }
-
-    const decoded = jwtDecode<JWTPayload>(data.token);
-
-    const serverRole =
-      decoded.roles[0].authority.replace("ROLE_", "") || "USER";
-
-    return {
-      username: decoded.sub,
-      role: serverRole,
-    };
   },
 
+  /**
+   * Dispatches new standard profile details down to the database registration gate.
+   */
   async register(payload: Omit<LoginPayload, "role">): Promise<void> {
     const response = await fetch("http://localhost:8080/api/v1/auth/register", {
       method: "POST",
@@ -62,45 +34,80 @@ export const authService = {
       body: JSON.stringify({
         username: payload.username,
         password: payload.password,
-        role: "user",
+        role: "user", // Enforces standard user role context natively
       }),
     });
+
     if (!response.ok) {
-      throw new Error("Registration failed.");
+      throw new Error(
+        "Registration failed. Profile username may be already taken.",
+      );
     }
   },
 
-  getToken(): string | null {
-    if (typeof window === "undefined") return null;
-    return sessionStorage.getItem("jwt_token");
+  /**
+   * Pulls all accounts out of MongoDB for the admin data grid table ledger views.
+   * Accepts the Spring Boot cookie string explicitly from the server layout loaders.
+   */
+  async getAllUsers(springCookie: string | null): Promise<any[]> {
+    const response = await fetch("http://localhost:8080/api/v1/admin/users", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: springCookie || "", // Appends the true backend cookie string
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to load user dataset from database repository.");
+    }
+
+    return response.json();
   },
 
-  getUserRole(): string | null {
-    const token = this.getToken();
-    if (!token) return null;
-    try {
-      const decoded = jwtDecode<JWTPayload>(token);
-      return decoded.roles[0]?.authority.replace("ROLE_", "") || "USER";
-    } catch {
-      return null;
+  /**
+   * Toggles account NonLocked permissions flags directly inside MongoDB.
+   */
+  async toggleBlockUser(id: string, springCookie: string | null): Promise<any> {
+    const response = await fetch(
+      `http://localhost:8080/api/v1/admin/users/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: springCookie || "", // Passes token context safely via server headers
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "Failed to modify user operational block configurations.",
+      );
     }
+
+    return response.json();
   },
 
-  isAuthenticated(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
-    try {
-      const decoded = jwtDecode<JWTPayload>(token);
-      const currentTime = Date.now() / 1000;
-      return decoded.exp > currentTime;
-    } catch {
-      return false;
-    }
-  },
+  /**
+   * Permanently purges an account from the system collection ledger.
+   */
+  async deleteUser(id: string, springCookie: string | null): Promise<boolean> {
+    const response = await fetch(
+      `http://localhost:8080/api/v1/admin/users/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: springCookie || "",
+        },
+      },
+    );
 
-  logout(): void {
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem("jwt_token");
+    if (!response.ok) {
+      throw new Error("Failed to execute account purge request.");
     }
+
+    return response.json(); // Returns true or false matching your backend configuration
   },
 };
