@@ -1,5 +1,4 @@
 import { authService } from "~/service/auth.service";
-import type { Route } from "./+types/userdashboard";
 import {
   Form,
   useActionData,
@@ -7,6 +6,7 @@ import {
   useNavigation,
 } from "react-router";
 import { serverSessionService } from "~/service/session.server";
+import type { Route } from "./+types/adminDashboard";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,7 +18,6 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ request }: Route.LoaderArgs) {
   try {
     const springCookie = await serverSessionService.getBackendCookie(request);
-
     if (!springCookie) {
       throw new Error("No active governance session found. Please sign in.");
     }
