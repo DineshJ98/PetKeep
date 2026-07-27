@@ -38,11 +38,10 @@ export const authService = {
       }),
     });
 
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(
         "Registration failed. Profile username may be already taken.",
       );
-    }
   },
 
   /**
@@ -58,9 +57,8 @@ export const authService = {
       },
     });
 
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error("Failed to load user dataset from database repository.");
-    }
 
     return response.json();
   },
@@ -80,11 +78,10 @@ export const authService = {
       },
     );
 
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(
         "Failed to modify user operational block configurations.",
       );
-    }
 
     return response.json();
   },
@@ -104,10 +101,83 @@ export const authService = {
       },
     );
 
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error("Failed to execute account purge request.");
-    }
 
     return response.json(); // Returns true or false matching your backend configuration
+  },
+
+  async generatePet(
+    userId: string,
+    petName: string,
+    prompt: string,
+    springCookie: string | null,
+  ): Promise<string> {
+    const response = await fetch("http://localhost:8080/api/v1/pet/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: springCookie || "",
+      },
+      body: JSON.stringify({ userId, petName, prompt }),
+    });
+
+    console.log(response.status);
+    if (!response.ok) throw new Error("Failed to generate your pet.");
+
+    return response.json();
+  },
+
+  async executePetAction(
+    userId: string,
+    actionType: "feed" | "clean",
+    level: number,
+    springCookie: string | null,
+  ): Promise<any> {
+    const response = await fetch(
+      `http://localhost:8080/api/v1/pet/action?action=${actionType}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: springCookie || "",
+        },
+        body: JSON.stringify({ userId, level: level.toString() }),
+      },
+    );
+
+    if (!response.ok)
+      throw new Error(`Failed to execute pet action: ${actionType}`);
+
+    return response.json();
+  },
+
+  async deletePet(userId: string, springCookie: string | null): Promise<any> {
+    const response = await fetch(`http://localhost:8080/api/v1/pet/${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: springCookie || "",
+      },
+    });
+    if (!response.ok)
+      throw new Error("Failed to reset companion profile configuration.");
+    return response.json();
+  },
+
+  async getUserProfile(springCookie: string | null): Promise<any> {
+    const response = await fetch("http://localhost:8080/api/v1/auth/profile", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: springCookie || "",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to authenticate session profile credentials.");
+    }
+
+    return response.json();
   },
 };
