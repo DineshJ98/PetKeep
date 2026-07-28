@@ -3,7 +3,6 @@
 export interface LoginPayload {
   username: string;
   password: string;
-  role: "user" | "admin";
 }
 
 export const authService = {
@@ -122,7 +121,6 @@ export const authService = {
       body: JSON.stringify({ userId, petName, prompt }),
     });
 
-    console.log(response.status);
     if (!response.ok) throw new Error("Failed to generate your pet.");
 
     return response.json();

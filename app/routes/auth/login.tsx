@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Form,
   Link,
@@ -18,13 +17,11 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const username = formData.get("username")?.toString() || "";
   const password = formData.get("password")?.toString() || "";
-  const role = formData.get("role")?.toString() as "user" | "admin";
 
   try {
     const backendResponse = await authService.loginResponse({
       username,
       password,
-      role,
     });
 
     if (!backendResponse.ok) {
@@ -59,7 +56,6 @@ export default function Login() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-  const [selectedRole, setSelectedRole] = useState<"user" | "admin">("user");
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 px-4 transition-colors">
@@ -73,24 +69,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Role Toggle Switcher */}
-        <div className="flex bg-slate-200 dark:bg-slate-950 p-1 rounded-xl border border-slate-300 dark:border-slate-800">
-          <button
-            type="button"
-            onClick={() => setSelectedRole("user")}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedRole === "user" ? "bg-teal-500 text-white shadow" : "text-slate-400"}`}
-          >
-            User Login
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedRole("admin")}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedRole === "admin" ? "bg-purple-600 text-white shadow" : "text-slate-400"}`}
-          >
-            Admin Management
-          </button>
-        </div>
-
         {actionData?.error && (
           <div className="p-3 text-xs text-red-500 bg-red-950/20 border border-red-900 rounded-lg">
             ⚠️ {actionData.error}
@@ -98,8 +76,6 @@ export default function Login() {
         )}
 
         <Form method="post" className="space-y-4">
-          <input type="hidden" name="role" value={selectedRole} />
-
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
               Username
