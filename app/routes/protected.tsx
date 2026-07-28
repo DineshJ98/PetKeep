@@ -18,19 +18,14 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   try {
     const tokenString = springCookie.replace("jwt_token=", "").trim();
-    console.log(`trimmed token: ${tokenString}`);
 
     const decodedToken = jwtDecode<SpringBootJWTPayload>(tokenString);
-    console.log(`decoded token: ${JSON.stringify(decodedToken)}`);
 
     const userAuthority = decodedToken.roles[0]?.authority || "ROLE_USER";
-    console.log(`user authority: ${userAuthority}`);
 
     const targetUrlPath = new URL(request.url).pathname;
-    console.log(`url path: ${targetUrlPath}`);
 
     if (targetUrlPath.startsWith("/admin") && userAuthority !== "ROLE_ADMIN") {
-      console.log(`user access admin`);
       return redirect("/");
     }
   } catch (error) {
