@@ -179,6 +179,9 @@ export default function PetDashboard() {
             </Form>
           </div>
         ) : (
+          /* ======================================================= */
+          /* CONDITION STATE B: Pet Is Present (Render Pet Dashboard) */
+          /* ======================================================= */
           <div className="space-y-6">
             <div className="text-center">
               <span className="px-2 py-0.5 bg-teal-500/10 text-teal-500 border border-teal-500/20 text-[10px] tracking-widest uppercase font-bold rounded-md">
@@ -196,25 +199,25 @@ export default function PetDashboard() {
 
             {/* Metrics Dashboard Gauges Layout */}
             <div className="space-y-4">
-              {/* Progress Bar 1: Hunger Level */}
+              {/* Progress Bar 1: Energy Level */}
               <div>
                 <div className="flex justify-between text-xs font-bold uppercase tracking-wide mb-1">
-                  <span className="text-slate-400">Hunger Telemetry</span>
+                  <span className="text-slate-400">Energy Tracker</span>
                   <span
                     className={
-                      pet.hunger > 75
+                      pet.energy < 25
                         ? "text-red-500 font-black animate-pulse"
                         : "text-slate-300"
                     }
                   >
-                    {pet.hunger} / 100
+                    {pet.energy} / 100
                   </span>
                 </div>
                 <div className="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
                   <div
                     className="bg-linear-to-r from-red-500 to-orange-400 h-full transition-all duration-500"
                     style={{
-                      width: `${Math.min(Math.max(pet.hunger, 0), 100)}%`,
+                      width: `${Math.min(Math.max(pet.energy, 0), 100)}%`,
                     }}
                   />
                 </div>
