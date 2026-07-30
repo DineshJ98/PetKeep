@@ -12,5 +12,6 @@ export default [
   layout("routes/protected.tsx", [
     route("playground", "routes/user/petdashboard.tsx"),
     route("admin/dashboard", "routes/admin/adminDashboard.tsx"),
+    route("logout", "routes/auth/logout.tsx"),
   ]),
 ] satisfies RouteConfig;

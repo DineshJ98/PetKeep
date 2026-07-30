@@ -4,9 +4,11 @@ import { authService } from "~/service/auth.service";
 import {
   Form,
   useActionData,
+  useFetcher,
   useLoaderData,
   useNavigation,
 } from "react-router";
+import { useEffect } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -21,9 +23,9 @@ export async function loader({ request }: Route.ActionArgs) {
     if (!springCookie) {
       throw new Error("No active credentials found. Please sign back in.");
     }
-    const currentUser = await authService.getUserProfile(springCookie);
+    const userProfile = await authService.getUserProfile(springCookie);
 
-    return { loggedInUser: currentUser, error: null };
+    return { loggedInUser: userProfile, error: null };
   } catch (error: any) {
     return { loggedInUser: null, error: error.message as string };
   }
@@ -100,14 +102,45 @@ export default function PetDashboard() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
 
+  const fetcher = useFetcher();
+
   const isSubmitting = navigation.state === "submitting";
 
-  const activeUser = actionData?.user || loggedInUser;
+  useEffect(() => {
+    if (!loggedInUser?.pet) return;
+
+    const intervalId = setInterval(() => {
+      // const cacheBuster = Date.now();
+      fetcher.load(`/playground`);
+      console.log(`[Live Sync Tick] Requesting fresh decay snapshot: `);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [loggedInUser?.pet]);
+
+  const activeUser =
+    actionData?.user || fetcher.data?.loggedInUser || loggedInUser;
   const pet = activeUser?.pet;
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center px-4 transition-colors duration-200">
       <div className="w-full max-w-md p-8 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl space-y-6">
+        {/* Place this clean component markup block into your layout headers or panels */}
+        <div className="flex justify-between items-center w-full pb-4 border-b border-slate-200 dark:border-slate-800">
+          <p className="text-xs text-slate-400 font-mono uppercase tracking-wider">
+            Security Scope Session Active
+          </p>
+
+          <Form method="post" action="/logout">
+            <button
+              type="submit"
+              className="px-3 py-1.5 bg-slate-200 hover:bg-red-600/10 text-slate-700 dark:text-slate-700 hover:text-red-500 dark:hover:text-red-400 border border-slate-300 dark:border-slate-800 text-xs font-semibold rounded-xl shadow-xs transition-all active:scale-[0.98]"
+            >
+              🔓 Sign Out Securely
+            </button>
+          </Form>
+        </div>
+
         {/* Error Feedback Layout Display */}
         {(loaderError || actionData?.error) && (
           <div className="p-3 text-xs text-red-500 bg-red-950/20 border border-red-900 rounded-lg text-center">
