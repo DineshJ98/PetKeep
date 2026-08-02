@@ -227,7 +227,30 @@ export default function PetDashboard() {
 
             {/* Graphic Space Matrix Placeholder Box */}
             <div className="w-full h-44 bg-slate-200 dark:bg-slate-950 rounded-2xl border border-slate-300 dark:border-slate-800 flex items-center justify-center relative overflow-hidden group shadow-inner">
-              <span className="text-5xl animate-bounce duration-1000">👾</span>
+              {pet.generationStatus === "PENDING" ? (
+                /* LOADING STATE: Displays while your background async Java thread executes the Hugging Face REST call */
+                <div className="text-center space-y-2">
+                  <img
+                    src={pet.avatarUrl}
+                    alt="Synthesizing Content"
+                    className="w-16 h-16 opacity-70"
+                  />
+                  <p className="text-[10px] text-teal-500 font-mono animate-pulse">
+                    AI is rendering your living companion...
+                  </p>
+                </div>
+              ) : (
+                /* SUCCESS PATH: Automatically decodes and displays your custom Stable Diffusion 3 image string out of MongoDB! */
+                <img
+                  src={pet.avatarUrl}
+                  alt="Your Custom Companion"
+                  className="w-full h-full object-cover p-2"
+                  onError={(e) => {
+                    // Safety check handler: if a base64 string gets truncated, fallback to a clean 3D graphic asset
+                    e.currentTarget.src = "https://githubusercontent.com";
+                  }}
+                />
+              )}
             </div>
 
             {/* Metrics Dashboard Gauges Layout */}
