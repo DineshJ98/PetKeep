@@ -123,7 +123,7 @@ export const authService = {
 
     if (!response.ok) throw new Error("Failed to generate your pet.");
 
-    return response.json();
+    return response.text();
   },
 
   async executePetAction(

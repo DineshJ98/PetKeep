@@ -42,11 +42,16 @@ export async function action({ request }: Route.ActionArgs) {
     if (intent === "generate") {
       const petName = formData.get("petName")?.toString() || "Companion";
       const prompt = formData.get("prompt")?.toString() || "Pixel Art Slime";
-      await authService.generatePet(userId, petName, prompt, springCookie);
+      const response = await authService.generatePet(
+        userId,
+        petName,
+        prompt,
+        springCookie,
+      );
       return {
         success: true,
         user: null,
-        message: "Companion generated successfully!",
+        message: response || "Companion generated successfully!",
         error: null,
       };
     }
@@ -110,7 +115,6 @@ export default function PetDashboard() {
     if (!loggedInUser?.pet) return;
 
     const intervalId = setInterval(() => {
-      // const cacheBuster = Date.now();
       fetcher.load(`/playground`);
       console.log(`[Live Sync Tick] Requesting fresh decay snapshot: `);
     }, 10000);
@@ -119,7 +123,7 @@ export default function PetDashboard() {
   }, [loggedInUser?.pet]);
 
   const activeUser =
-    actionData?.user || fetcher.data?.loggedInUser || loggedInUser;
+    fetcher.data?.loggedInUser || actionData?.user || loggedInUser;
   const pet = activeUser?.pet;
 
   return (
