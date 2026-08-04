@@ -3,11 +3,11 @@ package com.petkeep.services;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,6 +29,9 @@ public class PetService {
 	private final int MAX_LEVEL = 100;
 	private final int MIN_LEVEL = 0;
 
+	@Value("${huggingface.secret}")
+	private String token;
+
 	private final RestTemplate restTemplate = new RestTemplate();
 
 	public String generatePet(String userId, String type, String petName) {
@@ -49,7 +52,8 @@ public class PetService {
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
-				headers.set("Authorization", "Bearer ");
+
+				headers.set("Authorization", "Bearer " + token);
 
 				headers.set("Accept", "image/png");
 
