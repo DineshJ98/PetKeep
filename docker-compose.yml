@@ -31,6 +31,7 @@ services:
             - 8080:8080
         environment:
             SPRING_MONGODB_URI: ${SPRING_MONGODB_URI}
+            HUGGINGFACE_SECRET: ${HUGGINGFACE_SECRET}
         depends_on:
             - mongodb
         
