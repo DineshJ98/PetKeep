@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.petkeep.dto.CreateUserRequest;
+import com.petkeep.dto.CreateUserResponse;
+import com.petkeep.dto.LoginUserRequest;
+import com.petkeep.dto.LoginUserResponse;
+import com.petkeep.dto.UserProfileResponse;
 import com.petkeep.models.User;
 import com.petkeep.repositories.UserRepo;
 import com.petkeep.services.JWTService;
 import com.petkeep.services.PetService;
 
-import dto.CreateUserRequest;
-import dto.CreateUserResponse;
-import dto.LoginUserRequest;
-import dto.LoginUserResponse;
-import dto.UserProfileResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController

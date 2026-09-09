@@ -1,16 +1,18 @@
-package dto;
+package com.petkeep.dto;
 
-import com.petkeep.models.Pet;
+import com.petkeep.models.Role;
 
-public class UserProfileResponse {
+public class CreateUserResponse {
+
 	private String id;
 	private String username;
-	private Pet pet;
+	private Role role;
 
-	public UserProfileResponse(String id, String username, Pet pet) {
+	public CreateUserResponse(String id, String username, Role role) {
+		super();
 		this.id = id;
 		this.username = username;
-		this.pet = pet;
+		this.role = role;
 	}
 
 	public String getId() {
@@ -29,12 +31,12 @@ public class UserProfileResponse {
 		this.username = username;
 	}
 
-	public Pet getPet() {
-		return pet;
+	public Role getRole() {
+		return role;
 	}
 
-	public void setPet(Pet pet) {
-		this.pet = pet;
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 }

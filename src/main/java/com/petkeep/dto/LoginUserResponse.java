@@ -1,4 +1,4 @@
-package dto;
+package com.petkeep.dto;
 
 import com.petkeep.models.Role;
 
