@@ -1,7 +1,5 @@
 package com.petkeep.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,12 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.petkeep.models.Role;
 import com.petkeep.models.User;
 import com.petkeep.repositories.UserRepo;
 import com.petkeep.services.JWTService;
 import com.petkeep.services.PetService;
 
+import dto.CreateUserRequest;
+import dto.CreateUserResponse;
+import dto.LoginUserRequest;
+import dto.LoginUserResponse;
+import dto.UserProfileResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
@@ -42,50 +44,45 @@ public class AuthController {
 	private PetService petService;
 
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@RequestBody Map<String, String> request) {
+	public ResponseEntity<CreateUserResponse> register(@RequestBody CreateUserRequest request) {
 
 		try {
-			Role userRole = Role.valueOf(request.get("role").toUpperCase());
-
-			User user = new User(request.get("username"), passwordEncoder.encode(request.get("password")), userRole);
+			User user = new User(request.getUsername(), passwordEncoder.encode(request.getPassword()),
+					request.getRole());
 			userRepository.save(user);
-
-			return ResponseEntity.ok(user.toString());
+			CreateUserResponse userResponse = new CreateUserResponse(user.getId(), user.getUsername(), user.getRole());
+			return ResponseEntity.ok(userResponse);
 		} catch (IllegalArgumentException ex) {
 			ex.printStackTrace();
-			return ResponseEntity.badRequest().body("Invalid role provided. Chose USER, ADMIN or MANAGER");
+			return ResponseEntity.badRequest().body(null);
 		}
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<User> login(@RequestBody Map<String, String> request, HttpServletResponse response) {
-		authManager.authenticate(
-				new UsernamePasswordAuthenticationToken(request.get("username"), request.get("password")));
-
-		User user = userRepository.findByUsername(request.get("username")).orElseThrow();
-
+	public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest request,
+			HttpServletResponse response) {
+		authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+		User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
 		String token = jwtService.generateToken(user);
-
 		ResponseCookie cookie = ResponseCookie.from("jwt_token", token).httpOnly(true).secure(false).sameSite("Lax")
 				.path("/").maxAge(24 * 60 * 60).build();
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-		return ResponseEntity.ok(user);
+		LoginUserResponse userResponse = new LoginUserResponse(user.getUsername(), user.getRole(),
+				user.isAccountNonLocked());
+		return ResponseEntity.ok(userResponse);
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<User> getCurrentUserProfile() {
+	public ResponseEntity<UserProfileResponse> getCurrentUserProfile() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
 		if (authentication == null || !authentication.isAuthenticated()) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
-
 		User currentUser = (User) authentication.getPrincipal();
-
 		User decayedUser = petService.getUserWithDecayedPet(currentUser.getId());
-
-		return ResponseEntity.ok(decayedUser);
+		UserProfileResponse userResponse = new UserProfileResponse(decayedUser.getId(), decayedUser.getUsername(),
+				decayedUser.getPet());
+		return ResponseEntity.ok(userResponse);
 	}
 
 }
