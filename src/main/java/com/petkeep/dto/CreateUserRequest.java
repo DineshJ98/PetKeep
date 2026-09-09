@@ -1,9 +1,12 @@
-package dto;
+package com.petkeep.dto;
 
-public class LoginUserRequest {
+import com.petkeep.models.Role;
+
+public class CreateUserRequest {
 
 	private String username;
 	private String password;
+	private Role role;
 
 	public String getUsername() {
 		return username;
@@ -19,6 +22,14 @@ public class LoginUserRequest {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 }
