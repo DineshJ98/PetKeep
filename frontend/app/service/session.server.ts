@@ -1,4 +1,3 @@
-// app/services/session.server.ts
 import { createCookieSessionStorage } from "react-router";
 
 const storage = createCookieSessionStorage({
@@ -21,7 +20,7 @@ export const serverSessionService = {
     if (!setCookieHeader) return null;
 
     // Spring Boot cookie strings look like: "jwt_token=ey...; Path=/; HttpOnly"
-    // Split by semicolons and find the chunk starting with your cookie name
+    // Split by semicolons and find the chunk starting with the cookie name
     const parts = setCookieHeader.split(";");
     const jwtPart = parts.find((part) => part.trim().startsWith("jwt_token="));
 
