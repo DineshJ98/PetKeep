@@ -4,7 +4,7 @@ const storage = createCookieSessionStorage({
   cookie: {
     name: "__petkeep_server_session",
     secure: false, // Set to true in production HTTPS
-    secrets: ["super-secret-mvp-encryption-key-12345"],
+    secrets: [process.env.SESSION_SECRET!],
     sameSite: "lax",
     path: "/",
     httpOnly: true,
