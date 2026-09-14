@@ -1,18 +1,18 @@
-// app/service/auth.service.ts
-
 export interface LoginPayload {
   username: string;
   password: string;
 }
 
+const BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8000";
+
 export const authService = {
   /**
-   * Dispatches credentials to your Spring Boot REST API.
+   * Dispatches credentials to the Spring Boot REST API.
    * Returns the RAW HTTP Response object so the React Router SSR layout
    * can intercept and parse the "Set-Cookie" security header wrapper.
    */
   async loginResponse(payload: LoginPayload): Promise<Response> {
-    return fetch("http://localhost:8080/api/v1/auth/login", {
+    return fetch(`${BASE_URL}/api/v1/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export const authService = {
    * Dispatches new standard profile details down to the database registration gate.
    */
   async register(payload: Omit<LoginPayload, "role">): Promise<void> {
-    const response = await fetch("http://localhost:8080/api/v1/auth/register", {
+    const response = await fetch(`${BASE_URL}/api/v1/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export const authService = {
       body: JSON.stringify({
         username: payload.username,
         password: payload.password,
-        role: "user", // Enforces standard user role context natively
+        role: "USER", // Enforces standard user role context natively
       }),
     });
 
@@ -48,7 +48,7 @@ export const authService = {
    * Accepts the Spring Boot cookie string explicitly from the server layout loaders.
    */
   async getAllUsers(springCookie: string | null): Promise<any[]> {
-    const response = await fetch("http://localhost:8080/api/v1/admin/users", {
+    const response = await fetch(`${BASE_URL}/api/v1/admin/users`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -66,16 +66,13 @@ export const authService = {
    * Toggles account NonLocked permissions flags directly inside MongoDB.
    */
   async toggleBlockUser(id: string, springCookie: string | null): Promise<any> {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/admin/users/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: springCookie || "", // Passes token context safely via server headers
-        },
+    const response = await fetch(`${BASE_URL}/api/v1/admin/users/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: springCookie || "", // Passes token context safely via server headers
       },
-    );
+    });
 
     if (!response.ok)
       throw new Error(
@@ -89,16 +86,13 @@ export const authService = {
    * Permanently purges an account from the system collection ledger.
    */
   async deleteUser(id: string, springCookie: string | null): Promise<boolean> {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/admin/users/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: springCookie || "",
-        },
+    const response = await fetch(`${BASE_URL}/api/v1/admin/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: springCookie || "",
       },
-    );
+    });
 
     if (!response.ok)
       throw new Error("Failed to execute account purge request.");
@@ -112,7 +106,7 @@ export const authService = {
     prompt: string,
     springCookie: string | null,
   ): Promise<string> {
-    const response = await fetch("http://localhost:8080/api/v1/pet/generate", {
+    const response = await fetch(`${BASE_URL}/api/v1/pet/generate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -133,7 +127,7 @@ export const authService = {
     springCookie: string | null,
   ): Promise<any> {
     const response = await fetch(
-      `http://localhost:8080/api/v1/pet/action?action=${actionType}`,
+      `${BASE_URL}/api/v1/pet/action?action=${actionType}`,
       {
         method: "POST",
         headers: {
@@ -151,7 +145,7 @@ export const authService = {
   },
 
   async deletePet(userId: string, springCookie: string | null): Promise<any> {
-    const response = await fetch(`http://localhost:8080/api/v1/pet/${userId}`, {
+    const response = await fetch(`${BASE_URL}/api/v1/pet/${userId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -164,7 +158,7 @@ export const authService = {
   },
 
   async getUserProfile(springCookie: string | null): Promise<any> {
-    const response = await fetch("http://localhost:8080/api/v1/auth/profile", {
+    const response = await fetch(`${BASE_URL}/api/v1/auth/profile`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
