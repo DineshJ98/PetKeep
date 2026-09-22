@@ -33,7 +33,6 @@ export const authService = {
       body: JSON.stringify({
         username: payload.username,
         password: payload.password,
-        role: "USER", // Enforces standard user role context natively
       }),
     });
 
