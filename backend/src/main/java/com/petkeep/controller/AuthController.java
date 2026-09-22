@@ -21,6 +21,7 @@ import com.petkeep.dto.CreateUserResponse;
 import com.petkeep.dto.LoginUserRequest;
 import com.petkeep.dto.LoginUserResponse;
 import com.petkeep.dto.UserProfileResponse;
+import com.petkeep.models.Role;
 import com.petkeep.models.User;
 import com.petkeep.repositories.UserRepo;
 import com.petkeep.services.JWTService;
@@ -47,8 +48,7 @@ public class AuthController {
 	public ResponseEntity<CreateUserResponse> register(@RequestBody CreateUserRequest request) {
 
 		try {
-			User user = new User(request.getUsername(), passwordEncoder.encode(request.getPassword()),
-					request.getRole());
+			User user = new User(request.getUsername(), passwordEncoder.encode(request.getPassword()), Role.USER);
 			userRepository.save(user);
 			CreateUserResponse userResponse = new CreateUserResponse(user.getId(), user.getUsername(), user.getRole());
 			return ResponseEntity.ok(userResponse);
