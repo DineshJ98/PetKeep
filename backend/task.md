@@ -3,6 +3,11 @@
 Scope: findings **C1–C4** from the senior engineering review. Each task is
 independently implementable and testable; dependencies are explicit below.
 
+**Status legend:**
+- **Not Started** — nothing implemented yet
+- **In Progress** — partially implemented, or implemented but not yet verified
+- **Done** — implementation complete and all acceptance criteria verified
+
 ---
 
 ## C1 — Remove client-supplied role escalation
@@ -13,6 +18,9 @@ Make registration always create `ROLE_USER` server-side. Remove `role` from the
 register contract (drop the field from the request DTO or stop reading it) and
 hard-code `Role.USER` in the controller/service.
 
+- **Status:** In Progress — implemented (`AuthController` hard-codes `Role.USER`,
+  `role` removed from `CreateUserRequest` + frontend), but the escalation
+  integration test is still missing
 - **Files:** `CreateUserRequest`, `AuthController` (maybe new `AuthService`)
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -24,6 +32,7 @@ hard-code `Role.USER` in the controller/service.
 Add request validation to the register payload (non-blank, size limits on
 `username`/`password`).
 
+- **Status:** Not Started
 - **Files:** `CreateUserRequest`, `AuthController`
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -35,6 +44,7 @@ Add request validation to the register payload (non-blank, size limits on
 Return a clean `409 Conflict` for duplicate usernames instead of an uncaught
 `500`.
 
+- **Status:** Not Started
 - **Files:** `AuthController` (or a new `@RestControllerAdvice`), `UserRepo`
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -47,6 +57,7 @@ Return a clean `409 Conflict` for duplicate usernames instead of an uncaught
 Provide a safe path to provision ADMIN accounts that isn't public (e.g., startup
 seeding from env config, or an admin-only endpoint guarded by an existing admin).
 
+- **Status:** Not Started
 - **Files:** New `AdminBootstrap` or `AdminController` endpoint
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -69,6 +80,7 @@ bootstrap path (C1-4).
 Read the signing key from `@Value("${jwt.secret}")` (env / `application.properties`)
 and remove the inline literal.
 
+- **Status:** Not Started
 - **Files:** `JWTService`, `application.properties` (+ `.env.example` if kept in-repo)
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -80,6 +92,7 @@ and remove the inline literal.
 
 Fail at startup when the secret is missing or too short for HS256 (< 32 bytes).
 
+- **Status:** Not Started
 - **Files:** `JWTService` (or `ApplicationConfig`)
 - **Depends on:** C2-1
 - **Acceptance criteria:**
@@ -91,6 +104,7 @@ Fail at startup when the secret is missing or too short for HS256 (< 32 bytes).
 Add an inert placeholder + docs (`.env.example` / README note) so the key never
 needs to be committed.
 
+- **Status:** Not Started
 - **Files:** `.env.example` (repo root / backend), README
 - **Depends on:** C2-1
 - **Acceptance criteria:**
@@ -112,6 +126,7 @@ Add a public user/pet response DTO and map `User` -> DTO in
 `AdminController.getAllUsers` (id, username, role, locked-state, pet summary —
 no password).
 
+- **Status:** Not Started
 - **Files:** New DTO, `AdminController`, `AdminService`
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -123,6 +138,7 @@ no password).
 Replace the `ResponseEntity<User>` returns in `PetController.action` and
 `PetController.deletePet` with the same/similar DTO.
 
+- **Status:** Not Started
 - **Files:** `PetController` (shared DTO)
 - **Depends on:** C3-1
 - **Acceptance criteria:**
@@ -135,6 +151,7 @@ Replace the `ResponseEntity<User>` returns in `PetController.action` and
 Neutralize the credential leak in `User.toString()` (drop `password`) and add
 `@JsonIgnore` (or equivalent) on `getPassword()` as defense-in-depth.
 
+- **Status:** Not Started
 - **Files:** `User`
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -146,6 +163,7 @@ Neutralize the credential leak in `User.toString()` (drop `password`) and add
 Add a serialization regression test sweeping all response models to assert
 `password` is never present in any wire payload.
 
+- **Status:** Not Started
 - **Files:** New test, response DTOs
 - **Depends on:** C3-1, C3-2, C3-3
 - **Acceptance criteria:**
@@ -166,6 +184,7 @@ Introduce a single way to resolve the currently authenticated user (e.g.,
 `@AuthenticationPrincipal` param, or one `SecurityUtils` / `CurrentUserService`
 helper) so controllers stop accepting identity from the body.
 
+- **Status:** Not Started
 - **Files:** New helper or controller params, `PetController`
 - **Depends on:** —
 - **Acceptance criteria:**
@@ -177,6 +196,7 @@ helper) so controllers stop accepting identity from the body.
 Point `/api/v1/pet/generate` at the principal's identity (ignore any body
 `userId`).
 
+- **Status:** Not Started
 - **Files:** `PetController`, `PetService`
 - **Depends on:** C4-1
 - **Acceptance criteria:**
@@ -187,6 +207,7 @@ Point `/api/v1/pet/generate` at the principal's identity (ignore any body
 
 Point `/api/v1/pet/action` at the principal's identity.
 
+- **Status:** Not Started
 - **Files:** `PetController`
 - **Depends on:** C4-1
 - **Acceptance criteria:**
@@ -198,6 +219,7 @@ Point `/api/v1/pet/action` at the principal's identity.
 Make `/api/v1/pet/{id}` resolve to the caller's own pet only (validate id against
 principal, or drop the id and act on own pet).
 
+- **Status:** Not Started
 - **Files:** `PetController`, `PetService`
 - **Depends on:** C4-1
 - **Acceptance criteria:**
@@ -210,6 +232,7 @@ Add integration tests covering the three cross-user attempts
 (generate/action/delete) asserting both the failing status and that the victim's
 document is byte-identical.
 
+- **Status:** Not Started
 - **Files:** New integration tests
 - **Depends on:** C4-2, C4-3, C4-4
 - **Acceptance criteria:**
